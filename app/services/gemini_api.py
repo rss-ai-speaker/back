@@ -6,7 +6,7 @@ class GeminiBot:
     def __init__(self,model_name):
         super().__init__()
         genai.configure(
-            api_key=os.environ['GEMINI_API_KEY'])
+            api_key=os.getenv('GEMINI_API_KEY'))
         model = genai.GenerativeModel(
             model_name=model_name)
 
