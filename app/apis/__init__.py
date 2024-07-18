@@ -1,7 +1,6 @@
-import requests
-from flask import Blueprint, render_template, abort, request
-from jinja2 import TemplateNotFound
+from flask import Blueprint, request
 
+from app.dtos.chat import ChatDto
 from app.services.gemini_api import GeminiBot
 
 bp = Blueprint('apis', __name__, template_folder='templates')
@@ -9,12 +8,11 @@ bp = Blueprint('apis', __name__, template_folder='templates')
 
 @bp.route('/api/chat', methods=['POST'])
 def chat():
-    request_data = request.get_json()
-    bot = GeminiBot(model_name="gemini_pro")
+    request_data: ChatDto = ChatDto(**request.json)
+    bot = GeminiBot(model_name="gemini-1.5-pro")
 
-    response = bot.send_message(request_data)
+    response = bot.send_message(request_data.message)
 
-    print(request_data)
     return response
 
 
