@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Optional
 
-from app import db
+from .database import db
 
 
 class User(db.Model):
@@ -33,3 +34,20 @@ class RSS(db.Model):
         self.datetime = datetime.now()
         db.session.add(self)
         db.session.commit()
+
+
+class Content(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    rss_id = db.Column(db.Integer, db.ForeignKey('rss.id'), nullable=False)
+    content = db.Column(db.String(120), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, title:str, content:str,rss_id:int,created_at:Optional[datetime]=None):
+        self.title = title
+        self.content = content
+        self.rss_id = rss_id
+        self.created_at = created_at if created_at else datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
