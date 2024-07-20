@@ -25,6 +25,9 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
     from . import models
 
+    with app.app_context():
+        db.create_all()
+
     # register bp
     app.register_blueprint(apis.bp)
 
