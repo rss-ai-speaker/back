@@ -1,14 +1,10 @@
 import os
 
 from flask import Flask
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 
 import config
 from . import apis
-
-db = SQLAlchemy()
-migrate = Migrate()
+from .database import db, migrate
 
 
 def create_app(test_config=None):
