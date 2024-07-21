@@ -11,11 +11,10 @@ class RssService:
     def __init__(self, db: SQLAlchemy):
         self.db = db
 
-    def parse_rss(self, rss_id: str)-> List[Content]:
-        # rss = self.db.session.execute(self.db.select(RSS).filter(RSS.id == rss_id))
-        news_feed = feedparser.parse("https://www.reddit.com/r/nextjs/comments/184dy3r/nextjs_is_hard/.rss")
+    def parse_rss(self, rss_link:str) -> List[Content]:
+        news_feed = feedparser.parse(rss_link)
 
-        contents = [Content(title=content.title+'ss ',rss_id=1,content=content.content[0].value+'  ') for content in
+        contents = [Content(id=content.id,title=content.title,content=content.content[0].value) for content in
                     news_feed.entries]
 
         self.db.session.add_all(contents)

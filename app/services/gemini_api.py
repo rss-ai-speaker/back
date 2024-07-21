@@ -29,4 +29,3 @@ class SummarizeBot(GeminiBot):
 
         response = self.model.generate_content(template)
         return response
-
