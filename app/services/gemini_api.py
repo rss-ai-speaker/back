@@ -3,6 +3,9 @@ from typing import List
 import google.generativeai as genai
 import os
 
+from app.models import Content
+from utils.custom_logger import c_logger
+
 
 class GeminiBot:
     def __init__(self,model_name):
@@ -18,7 +21,9 @@ class GeminiBot:
 
 
 class SummarizeBot(GeminiBot):
-    def __init__(self,model_name):
+    def __init__(self,db,rss_id,model_name='gemini-1.5-pro'):
+        self.rss_id = rss_id
+        self.db = db
         super().__init__(model_name)
 
     def send_message(self,message: str):
@@ -28,4 +33,13 @@ class SummarizeBot(GeminiBot):
                    " of the main articles. DATA:{data}".format(data=message)
 
         response = self.model.generate_content(template)
-        return response
+        content = Content(rss_id=self.rss_id,summary=response.text)
+        self.db.session.add(content)
+        self.db.session.commit()
+
+    def get_summary(self)->str:
+
+        content = self.db.session.execute(self.db.select(Content).filter_by(rss_id=self.rss_id)).first()
+
+        c_logger.debug(content[0].summary)
+        return content[0].summary
