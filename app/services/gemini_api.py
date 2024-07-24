@@ -40,5 +40,4 @@ class SummarizeBot(GeminiBot):
 
         content = self.db.session.execute(self.db.select(Content).filter_by(id=content_id)).first()
 
-        c_logger.debug(content[0].summary)
         return content[0].summary
