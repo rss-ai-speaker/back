@@ -1,17 +1,23 @@
 from datetime import datetime
 from typing import Optional
 import sqlalchemy as sa
+from sqlalchemy.orm import Mapped, mapped_column
+import uuid
+
 from .database import db
 
 
-class RSS(db.Model):
-    id = db.Column(db.String(120),unique=True, primary_key=True)
-    title = db.Column(db.String(120), nullable=False)
-    content = db.Column(db.String(120), nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False)
+def gen_uuid():
+    return str(uuid.uuid4())
 
-    def __init__(self,id, title, content):
-        self.id = id
+class RSS(db.Model):
+    id: Mapped[str] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(nullable=False)
+    content: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[str] = mapped_column()
+
+    def __init__(self, link, title, content):
+        self.id = link
         self.title = title
         self.content = content
         self.created_at = datetime.now()
@@ -20,13 +26,14 @@ class RSS(db.Model):
 
 
 class Content(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    rss_id = db.Column(db.String, db.ForeignKey("rss.id"), nullable=False)
-    summary = db.Column(db.String(120), nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False)
+    id: Mapped[str] = mapped_column(primary_key=True)
+    rss_link: Mapped[str] = mapped_column(db.ForeignKey("rss.id"), nullable=False)
+    summary:Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column()
 
-    def __init__(self,rss_id:int,summary:str,created_at:Optional[datetime]= None):
-        self.rss_id = rss_id
+    def __init__(self,rss_link:str,summary:str,created_at:Optional[datetime]= None):
+        self.id = gen_uuid()
+        self.rss_link = rss_link
         self.summary = summary
         self.created_at = created_at if created_at else datetime.now()
         db.session.add(self)

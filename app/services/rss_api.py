@@ -21,7 +21,7 @@ class RssService:
         if self.rss_s:
             return self.rss_s
 
-        self.rss_s = [RSS(id=content.link,title=content.title,content=content.content[0].value) for content in news_feed.entries]
+        self.rss_s = [RSS(link=content.link,title=content.title,content=content.content[0].value) for content in news_feed.entries]
 
         self.db.session.add_all(self.rss_s)
 
