@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 import sqlalchemy as sa
@@ -10,6 +11,8 @@ from .database import db
 def gen_uuid():
     return str(uuid.uuid4())
 
+
+@dataclass
 class RSS(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
     link: Mapped[str] = mapped_column()
@@ -27,6 +30,7 @@ class RSS(db.Model):
         db.session.commit()
 
 
+@dataclass
 class Content(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
     rss_link: Mapped[str] = mapped_column(db.ForeignKey("rss.id"), nullable=False)
