@@ -4,7 +4,8 @@ from typing import List, Optional
 import feedparser
 from flask_sqlalchemy import SQLAlchemy
 
-from app.models import RSS
+from app.models import RSS, Content
+from utils.custom_logger import c_logger
 
 
 class RssService:
@@ -26,4 +27,13 @@ class RssService:
         self.db.session.add_all(self.rss_s)
 
         return self.rss_s
+
+    def get_rss_content_list(self) -> List[Content]:
+        contents = self.db.session.query(Content).all()
+        return contents
+
+    def get_rss_content(self, content_id:str) -> Content:
+        content = self.db.session.query(Content).filter_by(id=content_id).first()
+
+        return content
 
