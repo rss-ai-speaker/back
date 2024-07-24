@@ -20,12 +20,11 @@ def summarize():
 
         return response
     else:
-        rss_service = RssService(db)
         rss_link_dto = RssLinkDto(**request.json)
+        rss_service = RssService(db)
+        summarize_bot = SummarizeBot(db,model_name="gemini-1.5-pro")
 
         rss_contents = rss_service.parse_rss(rss_link_dto.link)
-
-        summarize_bot = SummarizeBot(db,model_name="gemini-1.5-pro")
         message = ''.join(content.content for content in rss_contents)
 
         content_id = summarize_bot.send_message(rss_link=rss_link_dto.link, message=message)
