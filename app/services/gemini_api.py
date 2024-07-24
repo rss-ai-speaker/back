@@ -31,6 +31,10 @@ class SummarizeBot(GeminiBot):
                    ", publication dates, and brief descriptions"\
                    " of the main articles. DATA:{data}".format(data=message)
 
+        existed_content = self.db.session.execute(self.db.select(Content).filter_by(rss_link=rss_link)).first()
+        if existed_content:
+            return existed_content[0].id
+
         response = self.model.generate_content(template)
         content = Content(rss_link=rss_link,summary=response.text)
 
@@ -39,5 +43,4 @@ class SummarizeBot(GeminiBot):
     def get_summary(self,content_id:str)->str:
 
         content = self.db.session.execute(self.db.select(Content).filter_by(id=content_id)).first()
-
         return content[0].summary

@@ -12,12 +12,14 @@ def gen_uuid():
 
 class RSS(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
+    link: Mapped[str] = mapped_column()
     title: Mapped[str] = mapped_column(nullable=False)
     content: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[str] = mapped_column()
 
-    def __init__(self, link, title, content):
-        self.id = link
+    def __init__(self,id, link, title, content):
+        self.id = id
+        self.link = link
         self.title = title
         self.content = content
         self.created_at = datetime.now()
