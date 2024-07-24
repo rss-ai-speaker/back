@@ -15,8 +15,8 @@ def summarize():
         args = request.args
         id = args.to_dict().get('id')
 
-        summarize_bot = SummarizeBot(db,rss_id=id)
-        response = summarize_bot.get_summary()
+        summarize_bot = SummarizeBot(db)
+        response = summarize_bot.get_summary(content_id=id)
 
         return response
     else:
@@ -25,10 +25,9 @@ def summarize():
 
         rss_contents = rss_service.parse_rss(rss_link_dto.link)
 
-        summarize_bot = SummarizeBot(db,rss_id=rss_link_dto.link,model_name="gemini-1.5-pro")
-
+        summarize_bot = SummarizeBot(db,model_name="gemini-1.5-pro")
         message = ''.join(content.content for content in rss_contents)
 
-        summarize_bot.send_message(message)
+        content_id = summarize_bot.send_message(rss_link=rss_link_dto.link, message=message)
 
-        return rss_link_dto.link
+        return content_id
