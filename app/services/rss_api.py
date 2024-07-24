@@ -7,9 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from app.models import RSS
 
 
-def parse_without_rss_path(url:str)->str:
-    return url.split(".rss")[0]
-
 class RssService:
     rss_s: Optional[List[RSS]]
 
