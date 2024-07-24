@@ -21,25 +21,24 @@ class GeminiBot:
 
 
 class SummarizeBot(GeminiBot):
-    def __init__(self,db,rss_id,model_name='gemini-1.5-pro'):
-        self.rss_id = rss_id
+    def __init__(self,db,model_name='gemini-1.5-pro'):
         self.db = db
         super().__init__(model_name)
 
-    def send_message(self,message: str):
+    def send_message(self,rss_link:str,message: str):
         template = "Please summarize the content of this data"\
                    ". Focus on key headlines"\
                    ", publication dates, and brief descriptions"\
                    " of the main articles. DATA:{data}".format(data=message)
 
         response = self.model.generate_content(template)
-        content = Content(rss_id=self.rss_id,summary=response.text)
-        self.db.session.add(content)
-        self.db.session.commit()
+        content = Content(rss_link=rss_link,summary=response.text)
 
-    def get_summary(self)->str:
+        return content.id
 
-        content = self.db.session.execute(self.db.select(Content).filter_by(rss_id=self.rss_id)).first()
+    def get_summary(self,content_id:str)->str:
+
+        content = self.db.session.execute(self.db.select(Content).filter_by(id=content_id)).first()
 
         c_logger.debug(content[0].summary)
         return content[0].summary
