@@ -25,15 +25,15 @@ class SummarizeBot(GeminiBot):
         self.db = db
         super().__init__(model_name)
 
+    def get_existed_content(self,rss_link:str)->Content:
+        existed_content = self.db.session.execute(self.db.select(Content).filter_by(rss_link=rss_link)).first()
+        return existed_content[0] if existed_content else None
+
     def send_message(self,rss_link:str,message: str):
         template = "Please summarize the content of this data"\
                    ". Focus on key headlines"\
                    ", publication dates, and brief descriptions"\
                    " of the main articles. DATA:{data}".format(data=message)
-
-        existed_content = self.db.session.execute(self.db.select(Content).filter_by(rss_link=rss_link)).first()
-        if existed_content:
-            return existed_content[0].id
 
         response = self.model.generate_content(template)
         content = Content(rss_link=rss_link,summary=response.text)

@@ -27,6 +27,10 @@ def summarize():
         rss_contents = rss_service.parse_rss(rss_link_dto.link)
         message = ''.join(content.content for content in rss_contents)
 
+        content = summarize_bot.get_existed_content(rss_link=rss_link_dto.link)
+        if content:
+            return content.id
+
         content_id = summarize_bot.send_message(rss_link=rss_link_dto.link, message=message)
 
         return content_id
