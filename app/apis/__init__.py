@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 
-from utils.custom_logger import c_logger
 from ..database import db
 from app.services.gemini_api import SummarizeBot
 from app.services.rss_api import RssService
@@ -9,7 +8,12 @@ from ..dtos.rss_dto import RssLinkDto
 bp = Blueprint('apis', __name__, template_folder='templates')
 
 
-@bp.route('/api/summarize', methods=['GET','POST'])
+@bp.route('/', methods=['GET'])
+def index():
+    return "Welcome to the API"
+
+
+@bp.route('/api/summarize', methods=['GET', 'POST'])
 def summarize():
     if request.method == "GET":
         args = request.args
@@ -18,11 +22,11 @@ def summarize():
         summarize_bot = SummarizeBot(db)
         response = summarize_bot.get_summary(content_id=id)
 
-        return response
+        return jsonify({'text': response})
     else:
         rss_link_dto = RssLinkDto(**request.json)
         rss_service = RssService(db)
-        summarize_bot = SummarizeBot(db,model_name="gemini-1.5-pro")
+        summarize_bot = SummarizeBot(db, model_name="gemini-1.5-pro")
 
         rss_contents = rss_service.parse_rss(rss_link_dto.link)
         message = ''.join(content.content for content in rss_contents)
@@ -31,12 +35,13 @@ def summarize():
         if content:
             return content.id
 
-        content_id = summarize_bot.send_message(rss_link=rss_link_dto.link, message=message)
+        content_id = summarize_bot.send_message(
+            rss_link=rss_link_dto.link, message=message)
 
-        return content_id
+        return jsonify({'id': content_id})
 
 
-@bp.route('/api/list',defaults={'content_id': None}, methods=['GET'])
+@bp.route('/api/list', defaults={'content_id': None}, methods=['GET'])
 @bp.route('/api/list/<string:content_id>', methods=['GET'])
 def content_list(content_id):
     rss_service = RssService(db)
@@ -47,5 +52,3 @@ def content_list(content_id):
 
     contents = rss_service.get_rss_content_list()
     return jsonify(contents)
-
-
