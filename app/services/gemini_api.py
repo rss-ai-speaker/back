@@ -6,11 +6,19 @@ import os
 from app.models import Content
 
 
+def get_gemini_api():
+    if os.getenv('GEMINI_API_KEY'):
+        return os.getenv('GEMINI_API_KEY')
+
+    with open('/run/secrets/gemini_api_key', 'r') as f:
+        return f.read().strip()
+
+
 class GeminiBot:
     def __init__(self, model_name):
         super().__init__()
         genai.configure(
-            api_key=os.getenv('GEMINI_API_KEY'))
+            api_key=get_gemini_api())
         self.model = genai.GenerativeModel(
             model_name=model_name)
 

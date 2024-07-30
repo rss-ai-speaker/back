@@ -33,7 +33,7 @@ def summarize():
 
         content = summarize_bot.get_existed_content(rss_link=rss_link_dto.link)
         if content:
-            return content.id
+            return jsonify({'id': content.id})
 
         content_id = summarize_bot.send_message(
             rss_link=rss_link_dto.link, message=message)
